@@ -1,0 +1,70 @@
+name: Backup and Restore Workflow
+
+on:
+  schedule:
+    - cron: "0 0 * * *"   # runs once every 24 hours (00:00 UTC)
+  workflow_dispatch:
+
+jobs:
+  backup:
+    name: Database Backup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r viewer/requirements.txt
+
+      - name: Run backup script
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          Z_SUBDOMAIN: ${{ secrets.ZENDESK_SUBDOMAIN }}
+          Z_EMAIL: ${{ secrets.ZENDESK_EMAIL }}
+          Z_TOKEN: ${{ secrets.ZENDESK_API_TOKEN }}
+        run: |
+          echo "Starting backup..."
+          python backup.py
+
+      - name: Upload backup artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: db-backup-${{ github.run_id }}
+          path: backups/*.zip
+
+  restore:
+    name: Restore if Backup Fails
+    needs: backup
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r viewer/requirements.txt
+
+      - name: Run restore script
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          Z_SUBDOMAIN: ${{ secrets.ZENDESK_SUBDOMAIN }}
+          Z_EMAIL: ${{ secrets.ZENDESK_EMAIL }}
+          Z_TOKEN: ${{ secrets.ZENDESK_API_TOKEN }}
+          RESTORE_FORCE: "1"
+        run: |
+          echo "Backup failed — starting restore..."
+          python restore.py
