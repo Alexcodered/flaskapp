@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}Views · Viewer{% endblock %}
+{% block content %}
+<div class="card">
+<div class="card-header">
+<div>
+<strong>Views</strong>
+<div class="meta">Total: {{ total }}</div>
+</div>
+{% set status = None %}
+{% include '_searchbar.html' %}
+</div>
+<div class="card-body">
+<table class="table">
+<thead><tr><th>ID</th><th>Title</th><th>Active</th><th>Default</th><th>Position</th><th>Updated</th></tr></thead>
+<tbody>
+{% for v in rows %}
+<tr>
+<td>{{ v.id }}</td>
+<td>{{ v.title or '—' }}</td>
+<td>{{ 'Yes' if v.active else 'No' }}</td>
+<td>{{ 'Yes' if v.default_view else 'No' }}</td>
+<td>{{ v.position or '—' }}</td>
+<td>{{ v.updated_at|humants }}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+{% include '_pagination.html' %}
+</div>
+</div>
+{% endblock %}

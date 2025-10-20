@@ -1,0 +1,11 @@
+{% if pages > 1 %}
+<div style="display:flex; gap:10px; justify-content:flex-end; margin-top:16px;">
+{% set _q = q or '' %}
+{% if status is defined %}
+{% set _status = status or '' %}
+{% endif %}
+<a class="nav" href="?q={{ _q }}{% if status is defined %}&status={{ _status }}{% endif %}&page={{ max(page-1,1) }}&per_page={{ per_page }}">Prev</a>
+<span class="meta" style="align-self:center;">Page {{ page }} of {{ pages }}</span>
+<a class="nav" href="?q={{ _q }}{% if status is defined %}&status={{ _status }}{% endif %}&page={{ min(page+1,pages) }}&per_page={{ per_page }}">Next</a>
+</div>
+{% endif %}

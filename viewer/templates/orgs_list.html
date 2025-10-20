@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Organizations • Viewer{% endblock %}
+{% block content %}
+<h1>Organizations</h1>
+
+<form class="toolbar" method="get">
+  <input name="q" placeholder="Search ID / name" value="{{ q }}">
+  <button type="submit">Search</button>
+</form>
+
+<div class="list">
+  {% if rows %}
+    {% for o in rows %}
+      <div class="row">
+        <div class="left">
+          <div class="id">#{{ o.id }}</div>
+          <div class="subject">{{ o.name or "—" }}</div>
+        </div>
+        <div class="right">
+          <span class="meta">Updated {{ o.updated_at|humants }}</span>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <div class="empty">No organizations found.</div>
+  {% endif %}
+</div>
+
+{% if pages > 1 %}
+<nav class="pager">
+  {% if page > 1 %}
+    <a class="btn" href="?q={{ q }}&page={{ page-1 }}&per_page={{ per_page }}">Prev</a>
+  {% endif %}
+  <span>Page {{ page }} / {{ pages }} &middot; {{ total }} results</span>
+  {% if page < pages %}
+    <a class="btn" href="?q={{ q }}&page={{ page+1 }}&per_page={{ per_page }}">Next</a>
+  {% endif %}
+</nav>
+{% endif %}
+{% endblock %}

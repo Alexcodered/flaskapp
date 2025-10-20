@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Users • Viewer{% endblock %}
+{% block content %}
+
+<h1>Users</h1>
+
+<form class="toolbar" method="get">
+  <input name="q" placeholder="Search ID / name / email" value="{{ q }}">
+  <select name="active">
+    <option value="">All</option>
+    <option value="1" {% if active=='1' %}selected{% endif %}>Active</option>
+    <option value="0" {% if active=='0' %}selected{% endif %}>Inactive</option>
+  </select>
+  <button type="submit">Filter</button>
+</form>
+
+<div class="list">
+  {% if rows %}
+    {% for u in rows %}
+      <a class="row" href="{{ url_for('user_detail', user_id=u.id) }}">
+        <div class="left">
+          <div class="id">#{{ u.id }}</div>
+          <div class="subject">{{ u.name or "—" }}</div>
+          <div class="meta">{{ u.email or "—" }}</div>
+        </div>
+        <div class="right">
+          <span class="pill">{% if u.active %}ACTIVE{% else %}INACTIVE{% endif %}</span>
+          <span class="meta">Updated {{ u.updated_at|humants }}</span>
+          <button class="btn" style="    background: #000000;
+    border: 1px solid var(--line);
+    color: #ffffff;
+    padding: 9px 12px;
+    border-radius: 10px;
+    cursor: pointer;">View</button>
+        </div>
+      </a>
+    {% endfor %}
+  {% else %}
+    <div class="empty">No users found.</div>
+  {% endif %}
+</div>
+
+{% if pages > 1 %}
+<nav class="pager">
+  {% if page > 1 %}
+    <a class="btn" href="?q={{ q }}&active={{ active }}&page={{ page-1 }}&per_page={{ per_page }}">Prev</a>
+  {% endif %}
+  <span>Page {{ page }} / {{ pages }} &middot; {{ total }} results</span>
+  {% if page < pages %}
+    <a class="btn" href="?q={{ q }}&active={{ active }}&page={{ page+1 }}&per_page={{ per_page }}">Next</a>
+  {% endif %}
+</nav>
+{% endif %}
+{% endblock %}

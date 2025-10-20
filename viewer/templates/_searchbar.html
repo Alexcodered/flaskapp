@@ -1,0 +1,12 @@
+<form method="get" class="searchbar">
+<input type="text" name="q" placeholder="Search…" value="{{ q or '' }}" />
+{% if status is defined %}
+<select name="status">
+<option value="">All statuses</option>
+{% for s in ['new','open','pending','hold','solved','closed'] %}
+<option value="{{ s }}" {% if status==s %}selected{% endif %}>{{ s|upper }}</option>
+{% endfor %}
+</select>
+{% endif %}
+<button type="submit">Filter</button>
+</form>

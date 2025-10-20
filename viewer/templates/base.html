@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>{% block title %}Zendesk Viewer{% endblock %}</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet" />
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="logo">Backup Viewer</div>
+    <nav>
+      <a href="{{ url_for('tickets') }}" class="{% if request.path.startswith('/tickets') %}active{% endif %}">Zendesk Tickets</a>
+      <a href="{{ url_for('users') }}" class="{% if request.path.startswith('/users') %}active{% endif %}">Users</a>
+      <a href="{{ url_for('orgs') }}" class="{% if request.path.startswith('/orgs') %}active{% endif %}">Organizations</a>
+      <a href="{{ url_for('views_') }}" class="{% if request.path.startswith('/views') %}active{% endif %}">Views</a>
+      <a href="{{ url_for('triggers_') }}" class="{% if request.path.startswith('/triggers') %}active{% endif %}">Triggers</a>
+      <a href="{{ url_for('trigger_categories_') }}" class="{% if request.path.startswith('/trigger-categories') %}active{% endif %}">Categories</a>
+      <a href="{{ url_for('macros_') }}" class="{% if request.path.startswith('/macros') %}active{% endif %}">Macros</a>
+     
+  </aside>
+
+  <div class="page">
+    <header class="topbar">
+      <div class="crumb">{% block crumb %}{% endblock %}</div>
+    </header>
+    <main class="container">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</body>
+</html>

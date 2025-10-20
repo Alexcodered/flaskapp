@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}Trigger Categories · Viewer{% endblock %}
+{% block content %}
+<div class="card">
+<div class="card-header">
+<div>
+<strong>Trigger Categories</strong>
+<div class="meta">Total: {{ total }}</div>
+</div>
+{% set status = None %}
+{% include '_searchbar.html' %}
+</div>
+<div class="card-body">
+<table class="table">
+<thead><tr><th>ID</th><th>Name</th><th>Position</th><th>Updated</th></tr></thead>
+<tbody>
+{% for c in rows %}
+<tr>
+<td>{{ c.id }}</td>
+<td>{{ c.name or '—' }}</td>
+<td>{{ c.position or '—' }}</td>
+<td>{{ c.updated_at|humants }}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+{% include '_pagination.html' %}
+</div>
+</div>
+{% endblock %}

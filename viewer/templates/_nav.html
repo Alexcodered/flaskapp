@@ -1,0 +1,15 @@
+<nav class="nav">
+<a href="{{ url_for('tickets') }}" class="{% if request.endpoint=='tickets' %}active{% endif %}">Tickets</a>
+<a href="{{ url_for('users') }}" class="{% if request.endpoint=='users' %}active{% endif %}">Users</a>
+<a href="{{ url_for('orgs') }}" class="{% if request.endpoint=='orgs' %}active{% endif %}">Organizations</a>
+<a href="{{ url_for('views_') }}" class="{% if request.endpoint=='views_' %}active{% endif %}">Views</a>
+<a href="{{ url_for('triggers_') }}" class="{% if request.endpoint=='triggers_' %}active{% endif %}">Triggers</a>
+<a href="{{ url_for('trigger_categories_') }}" class="{% if request.endpoint=='trigger_categories_' %}active{% endif %}">Trigger Categories</a>
+<a href="{{ url_for('macros_') }}" class="{% if request.endpoint=='macros_' %}active{% endif %}">Macros</a>
+</nav>
+```html
+<nav class="nav">
+<a href="{{ url_for('tickets') }}" class="{% if request.endpoint=='tickets' %}active{% endif %}">Tickets</a>
+<a href="{{ url_for('users') }}" class="{% if request.endpoint=='users' %}active{% endif %}">Users</a>
+<a href="{{ url_for('orgs') }}" class="{% if request.endpoint=='orgs' %}active{% endif %}">Organizations</a>
+</nav>

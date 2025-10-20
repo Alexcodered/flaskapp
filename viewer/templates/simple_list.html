@@ -1,0 +1,25 @@
+
+{% extends "base.html" %}
+{% block title %}{{ title }} • Viewer{% endblock %}
+{% block content %}
+<h1>{{ title }}</h1>
+<div class="list">
+  {% for r in rows %}
+  <div class="row">
+    <div class="left">
+      <div class="id">#{{ r[cols[0][0]] }}</div>
+      <div class="subject">{{ r[cols[1][0]] }}</div>
+    </div>
+    <div class="right">
+      {% if cols|length > 2 %}
+        {% for k, label in cols[2:] %}
+          <span class="meta">{{ label }}: {{ r[k] }}</span>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+  {% else %}
+    <div class="empty">No data.</div>
+  {% endfor %}
+</div>
+{% endblock %}

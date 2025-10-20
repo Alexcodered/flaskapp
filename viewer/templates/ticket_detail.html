@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% block title %}Ticket #{{ t.id }}{% endblock %}
+{% block content %}
+<a class="back" href="{{ url_for('tickets') }}">← Back to tickets</a>
+<h1>#{{ t.id }} — {{ t.subject or "No subject" }}</h1>
+
+<div class="cards" style="margin-bottom:20px">
+  <div class="card">
+    <div class="card-title">Details</div>
+    <table class="table">
+      <tbody>
+        <tr><td><b>Status</b></td><td><span class="chip">{{ t.status or "—" }}</span></td></tr>
+        <tr><td><b>Priority</b></td><td>{{ t.priority or "—" }}</td></tr>
+        <tr><td><b>Type</b></td><td>{{ t.type or "—" }}</td></tr>
+        <tr><td><b>Created</b></td><td>{{ t.created_at|humants }}</td></tr>
+        <tr><td><b>Updated</b></td><td>{{ t.updated_at|humants }}</td></tr>
+        {% if org %}<tr><td><b>Organization</b></td><td>{{ org.name }}</td></tr>{% endif %}
+        {% if requester %}<tr><td><b>Requester</b></td><td>{{ requester.name }} ({{ requester.email }})</td></tr>{% endif %}
+        {% if assignee %}<tr><td><b>Assignee</b></td><td>{{ assignee.name }} ({{ assignee.email }})</td></tr>{% endif %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Description</div>
+    <pre class="mono">{{ t.description or "—" }}</pre>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom:20px">
+  <div class="card-title">Attachments</div>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>File name</th>
+        <th>Source</th>
+        <th>Size</th>
+        <th class="t-actions" >Open</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% set flat_atts = [] %}
+      {% for lst in atts_by_comment.values() %}
+        {% for a in lst %}
+          {% set _ = flat_atts.append(a) %}
+        {% endfor %}
+      {% endfor %}
+
+      {% if flat_atts %}
+        {% for a in flat_atts %}
+          <tr>
+            <td>{{ a.file_name or "—" }}</td>
+            <td>
+              {% if a.local_path %}
+                <span class="chip badge-local">Local</span>
+              {% elif a.content_url %}
+                <span class="chip badge-remote">Remote URL</span>
+              {% else %}
+                <span class="meta">—</span>
+              {% endif %}
+            </td>
+            <td>{{ a.size|humansize }}</td>
+            <td class="t-actions">
+              {% if a.local_path %}
+                <a href="{{ url_for('serve_attachment', ticket_id=t.id, filename=a.local_path.split('/')[-1]) }}" target="_blank">Open file</a>
+              {% elif a.content_url %}
+                <a href="{{ a.content_url }}" target="_blank" rel="noopener">Open URL</a>
+              {% else %}
+                <span class="meta">Unavailable</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      {% else %}
+        <tr><td colspan="4"><span class="meta">No attachments</span></td></tr>
+      {% endif %}
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <div class="card-title">Conversation</div>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Author</th>
+        <th>Comment</th>
+        <th>Visibility</th>
+        <th>When</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in comments %}
+        <tr>
+          <td>
+            <div class="author-cell">
+              {% if c.author_avatar %}
+                <img class="avatar" src="{{ c.author_avatar }}" alt="{{ c.author_display }}">
+              {% else %}
+                <div class="avatar avatar-fallback">{{ (c.author_display or "U")[:1] }}</div>
+              {% endif %}
+              <div class="author-meta">
+                <div class="author-name">{{ c.author_display }}</div>
+                {% if c.author_email and c.author_email != c.author_display %}
+                  <div class="author-email">{{ c.author_email }}</div>
+                {% endif %}
+              </div>
+            </div>
+          </td>
+          <td><pre class="mono" style="margin:0">{{ c.body or "—" }}</pre></td>
+          <td>{{ "public" if c.public else "internal" }}</td>
+          <td>{{ c.created_at|humants }}</td>
+        </tr>
+        {% set atts = atts_by_comment.get(c.id) %}
+        {% if atts %}
+          <tr>
+            <td></td>
+            <td colspan="3">
+              <div class="attachments">
+                {% for a in atts %}
+                  {% if a.local_path %}
+                    <a class="file" href="{{ url_for('serve_attachment', ticket_id=t.id, filename=a.local_path.split('/')[-1]) }}" target="_blank">📎 {{ a.file_name }}</a>
+                  {% elif a.content_url %}
+                    <a class="file" href="{{ a.content_url }}" target="_blank" rel="noopener">📎 {{ a.file_name }}</a>
+                  {% else %}
+                    <span class="meta">📎 {{ a.file_name or "Attachment" }} (unavailable)</span>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            </td>
+          </tr>
+        {% endif %}
+      {% else %}
+        <tr><td colspan="4"><span class="meta">No comments</span></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

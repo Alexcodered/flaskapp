@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}User #{{ u.id }}{% endblock %}
+{% block content %}
+<a class="back" href="{{ url_for('users') }}">← Back to users</a>
+<h1>#{{ u.id }} — {{ u.name or "Unnamed" }}</h1>
+
+<div class="cards">
+  <div class="card">
+    <div class="card-title">Profile</div>
+    <div class="kv"><b>Email</b><span>{{ u.email or "—" }}</span></div>
+    <div class="kv"><b>Role</b><span>{{ u.role or "—" }}</span></div>
+    <div class="kv"><b>Status</b><span class="pill">{% if u.active %}ACTIVE{% else %}INACTIVE{% endif %}</span></div>
+    <div class="kv"><b>Suspended</b><span>{% if u.suspended %}Yes{% else %}No{% endif %}</span></div>
+    <div class="kv"><b>Created</b><span>{{ u.created_at|humants }}</span></div>
+    <div class="kv"><b>Updated</b><span>{{ u.updated_at|humants }}</span></div>
+    <div class="kv"><b>Last login</b><span>{{ u.last_login_at|humants }}</span></div>
+    {% if org %}<div class="kv"><b>Org</b><span>{{ org.name }}</span></div>{% endif %}
+  </div>
+
+  <div class="card">
+    <div class="card-title">Recent Tickets</div>
+    {% if tickets %}
+      <div class="list flat">
+        {% for t in tickets %}
+          <a class="row" href="{{ url_for('ticket_detail', ticket_id=t.id) }}">
+            <div class="left">
+              <div class="id">#{{ t.id }}</div>
+              <div class="subject">{{ t.subject or "—" }}</div>
+            </div>
+            <div class="right">
+              <span class="pill">{{ t.status }}</span>
+              <span class="meta">Updated {{ t.updated_at|humants }}</span>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty">No recent tickets.</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

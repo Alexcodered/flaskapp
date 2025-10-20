@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Tickets • Viewer{% endblock %}
+{% block content %}
+
+<h1>Zendesk Tickets</h1>
+
+<form class="toolbar" method="get">
+  <input name="q" placeholder="Search ID / subject / description" value="{{ q }}">
+  <select name="status">
+    <option value="">All statuses</option>
+    {% for s in ["new","open","pending","hold","solved","closed"] %}
+      <option value="{{ s }}" {% if s==status %}selected{% endif %}>{{ s|upper }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit">Filter</button>
+</form>
+
+<div class="list">
+  {% if rows %}
+    {% for r in rows %}
+      <a class="row" href="{{ url_for('ticket_detail', ticket_id=r.id) }}">
+        <div class="left">
+          <div class="id">#{{ r.id }}</div>
+          <div class="subject">{{ r.subject or "—" }}</div>
+          <div class="meta">Created {{ r.created_at|humants }}</div>
+        </div>
+        <div class="right">
+          <span class="pill">{{ r.status or "—" }}</span>
+          <span class="meta">Updated {{ r.updated_at|humants }}</span>
+          <button class="btn" style="    background: #000000;
+    border: 1px solid var(--line);
+    color: #ffffff;
+    padding: 9px 12px;
+    border-radius: 10px;
+    cursor: pointer;">View</button>
+        </div>
+      </a>
+    {% endfor %}
+  {% else %}
+    <div class="empty">No tickets found.</div>
+  {% endif %}
+</div>
+
+{% if pages > 1 %}
+<nav class="pager">
+  {% if page > 1 %}
+    <a class="btn" href="?q={{ q }}&status={{ status }}&page={{ page-1 }}&per_page={{ per_page }}">Prev</a>
+  {% endif %}
+  <span>Page {{ page }} / {{ pages }} &middot; {{ total }} results</span>
+  {% if page < pages %}
+    <a class="btn" href="?q={{ q }}&status={{ status }}&page={{ page+1 }}&per_page={{ per_page }}">Next</a>
+  {% endif %}
+</nav>
+{% endif %}
+{% endblock %}
